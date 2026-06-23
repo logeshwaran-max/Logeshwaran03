@@ -730,7 +730,7 @@ body::before{
           <a href="https://www.instagram.com/logexh_.x3?igsh=N2ppcm01YmxscmZl" class="contact-link" target="_blank" rel="noopener" data-hover>
            Instagram <span class="tag">@logesh._x3</span><span class="arrow">→</span>
           </a>
-          <a href=https://www.linkedin.com/in/logeshwaran-a-2330a2414?utm_source=share_via&utm_content=profile&utm_medium=member_android"" class="contact-link" target="_blank" rel="noopener" data-hover>
+          <a href="https://www.linkedin.com/in/logeshwaran-a-2330a2414?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="contact-link" target="_blank" rel="noopener" data-hover>
             Linkedin<span class="tag">Logeshwaran A</span><span class="arrow">→</span>
           </a>
           <a href="mailto:skynetlogeshwaran@gmail.com" class="contact-link" data-hover>
