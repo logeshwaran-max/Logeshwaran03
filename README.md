@@ -857,11 +857,12 @@ body::before{
               <div class="profile-photo-badge">DIR</div>
             </div>
           </div>
-
+      </div>
+      </div>
         
 
       <div class="scroll-cue"><span class="line"></span>CLG:RD NATIONAL COLLEGE OF A/S <BR>ADDRESS:SURAMPATTI VALASU,ERODE</div>
-      </section>
+     science</section>
 
     <!-- ABOUT -->
     <section class="section" id="about">
