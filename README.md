@@ -862,7 +862,6 @@ body::before{
       </div>
 
       <div class="scroll-cue"><span class="line"></span>CLG:RD NATIONAL COLLEGE OF A/S <BR>ADDRESS:SURAMPATTI VALASU,ERODE</div>
-    </section>SCIENCE
 
     <!-- ABOUT -->
     <section class="section" id="about">
@@ -873,7 +872,8 @@ body::before{
 
         <div class="about-grid">
           <div class="about-text reveal reveal-delay-1">
-            <p>I am <strong>Logeshwaran</strong>, a 17-year-old aspiring film director from studying in Rd National College of Arts & Science in Erode. I'm passionate about storytelling, screenplay writing, filmmaking, and creating emotional experiences through cinema.</p>
+            <p>I am <strong>Logeshwaran</strong>, an aspiring film director turning emotions into stories, with the endless support of my mom <strong>Malar A</strong> and my bro <strong>Mouneshwaran A</strong>-From Erode to the big screen - that's the dream I'm chasing
+ .</p>
             <p>Inspired by director <strong>Lokesh Kanagaraj</strong>, I dream of directing films that connect deeply with audiences — stories that linger long after the credits roll.</p>
             <p>Alongside filmmaking, I'm learning technology and building creative digital projects — because every great story today needs a great way to be told.</p>
             <p>🏅 Honored to receive the "Most Promising Developer" Award from RD National College of Arts & Science. I sincerely thank our Chairman, Mr. Rahul sir and the entire institution for their support, encouragement, and belief in young innovators. This recognition inspires me to continue learning, building, and growing as a developer while striving for greater achievements in the future. 🚀✨</p>
