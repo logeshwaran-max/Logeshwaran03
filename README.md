@@ -588,8 +588,8 @@ body::before{
     <span>LOADING REEL</span>
     <span class="loader-pct" id="loaderPct">0%</span>
   </div>
-</div>
-<!-- FIXED BACKDROP -->
+ </div>
+  <!-- FIXED BACKDROP -->
 <div class="backdrop"><div class="grain"></div></div>
 
 <!-- CUSTOM CURSOR -->
@@ -747,8 +747,7 @@ body::before{
       <span>© 2026 Logeshwaran A — All Stories Reserved</span>
       <a href="#home">Back to Top ↑</a>
     </footer>
-
-  </div>
+    </div>
 </div>
 
 <script>
