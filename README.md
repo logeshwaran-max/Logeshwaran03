@@ -833,7 +833,7 @@ body::before{
           <!-- TEXT SIDE -->
           <div class="hero-text">
             <div class="home-frame-no reveal">FRAME <span>001</span> — TAMIL NADU, INDIA</div>
-            <h1 class="hero-title reveal reveal-delay-1">I'M<br><span class="accent">LOGESH</span></h1>
+            <h1 class="hero-title reveal reveal-delay-1">I'M<br><span class="accent">LOGESHWARAN</span></h1>
 
             <div class="hero-bottom">
               <div class="reveal reveal-delay-2">
