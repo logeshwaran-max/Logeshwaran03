@@ -1189,7 +1189,7 @@ body::before{
         
 
       <div class="scroll-cue"><span class="line"></span>CLG:RD NATIONAL COLLEGE OF A/S <BR>ADDRESS:SURAMPATTI VALASU,ERODE</div>
-     science</section>
+     感情</section>
 
     <!-- ABOUT -->
     <section class="section" id="about">
