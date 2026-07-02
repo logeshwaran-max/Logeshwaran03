@@ -269,8 +269,8 @@ body::before{
   border-radius:999px;
   background:var(--glass);
   border:1px solid var(--glass-bd);
-  backdrop-filter:blur(14px) saturate(140%);
-  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  backdrop-filter:blur(9px) saturate(140%);
+  -webkit-backdrop-filter:blur(9px) saturate(140%);
 }
 .nav-logo{
   font-family:var(--mono);
@@ -482,8 +482,8 @@ body::before{
   border-radius:18px;
   margin-bottom:18px;
   background:var(--glass);
-  backdrop-filter:blur(12px) saturate(140%);
-  -webkit-backdrop-filter:blur(12px) saturate(140%);
+  backdrop-filter:blur(8px) saturate(140%);
+  -webkit-backdrop-filter:blur(8px) saturate(140%);
   overflow:hidden;
   transition:border-color .4s var(--ease), transform .4s var(--ease), background .4s var(--ease);
 }
@@ -577,6 +577,7 @@ body::before{
    PROFILE PHOTO
 ============================================================ */
 .profile-photo-wrap{
+  position:relative;
   flex-shrink:0;
   display:flex;
   align-items:center;
@@ -599,34 +600,28 @@ body::before{
   background:
     linear-gradient(135deg, rgba(255,22,53,0.35) 0%, rgba(255,255,255,0.06) 40%, rgba(255,22,53,0.2) 100%);
   padding:3px;
-  /* Neon red glow — layered for cinematic depth */
+  /* Neon red glow — cinematic but GPU-cheap (opacity-animated pseudo layer below) */
   box-shadow:
     0 0 0 1px rgba(255,22,53,0.25),
-    0 0 18px 4px rgba(255,22,53,0.55),
-    0 0 45px 12px rgba(255,22,53,0.28),
-    0 0 90px 24px rgba(255,22,53,0.12),
-    inset 0 0 24px rgba(255,22,53,0.08);
-  /* Pulse animation on glow */
-  animation: profileGlowPulse 3.2s ease-in-out infinite;
+    0 0 26px 6px rgba(255,22,53,0.45);
 }
-
+.profile-photo-ring > .profile-photo-inner{ position:relative; z-index:1; }
+/* pulsing glow layer — animates opacity/transform only, not box-shadow */
+.profile-photo-wrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  box-shadow:0 0 55px 16px rgba(255,22,53,0.35);
+  opacity:.55;
+  transform:scale(1);
+  animation: profileGlowPulse 3.2s ease-in-out infinite;
+  pointer-events:none;
+  will-change:transform,opacity;
+}
 @keyframes profileGlowPulse{
-  0%,100%{
-    box-shadow:
-      0 0 0 1px rgba(255,22,53,0.25),
-      0 0 18px 4px rgba(255,22,53,0.55),
-      0 0 45px 12px rgba(255,22,53,0.28),
-      0 0 90px 24px rgba(255,22,53,0.12),
-      inset 0 0 24px rgba(255,22,53,0.08);
-  }
-  50%{
-    box-shadow:
-      0 0 0 1px rgba(255,22,53,0.4),
-      0 0 24px 8px rgba(255,22,53,0.7),
-      0 0 60px 18px rgba(255,22,53,0.38),
-      0 0 110px 32px rgba(255,22,53,0.18),
-      inset 0 0 32px rgba(255,22,53,0.12);
-  }
+  0%,100%{ opacity:.4; transform:scale(1); }
+  50%{ opacity:.75; transform:scale(1.06); }
 }
 
 /* Rotating dashed orbit ring */
@@ -734,8 +729,8 @@ body::before{
   animation: badgePulse 2s ease-in-out infinite;
 }
 @keyframes badgePulse{
-  0%,100%{ transform:scale(1); box-shadow:0 0 16px rgba(255,22,53,0.7); }
-  50%{ transform:scale(1.1); box-shadow:0 0 24px rgba(255,22,53,0.9); }
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%{ transform:scale(1.12); opacity:.85; }
 }
 
 /* ============================================================
@@ -765,6 +760,235 @@ body::before{
     height:160px;
   }
   .hero-inner{ gap:28px; }
+}
+
+/* ============================================================
+   SPIDER-MAN WEB CORNERS — thin, cinematic, corners only
+   (GPU-friendly: transform/opacity only, no layout writes)
+============================================================ */
+.web-corner{
+  position:fixed;
+  width:clamp(110px,15vw,210px);
+  height:clamp(110px,15vw,210px);
+  z-index:40;
+  pointer-events:none;
+  opacity:.4;
+}
+.web-corner svg{ width:100%; height:100%; display:block; overflow:visible; }
+.web-corner-tl{ top:var(--frame-inset); left:var(--frame-inset); }
+.web-corner-tr{ top:var(--frame-inset); right:var(--frame-inset); transform:scaleX(-1); }
+.web-corner path,.web-corner line{
+  stroke:rgba(245,243,238,.5);
+  stroke-width:1;
+  fill:none;
+  vector-effect:non-scaling-stroke;
+  transform-box:fill-box;
+  transform-origin:0 0;
+}
+.web-corner .strand{ stroke:rgba(255,22,53,.4); }
+.web-corner.is-near path,.web-corner.is-near line{ animation:webShiver .4s ease-in-out; }
+@keyframes webShiver{
+  0%{ transform:translate3d(0,0,0); }
+  25%{ transform:translate3d(var(--wx,1px),var(--wy,1px),0); }
+  50%{ transform:translate3d(calc(var(--wx,1px)*-1),calc(var(--wy,1px)*-1),0); }
+  75%{ transform:translate3d(calc(var(--wx,1px)*.5),calc(var(--wy,1px)*.5),0); }
+  100%{ transform:translate3d(0,0,0); }
+}
+@media (max-width:600px){ .web-corner{ width:82px; height:82px; opacity:.32; } }
+@media (prefers-reduced-motion: reduce){ .web-corner path,.web-corner line{ animation:none !important; } }
+
+/* ============================================================
+   IRON MAN / HUD INTERACTION FX
+   (GPU-friendly: transform + opacity only)
+============================================================ */
+.hud-fx-layer{
+  position:fixed; inset:0; z-index:9990; pointer-events:none; overflow:hidden;
+  contain:strict;
+}
+.hud-fx{
+  position:absolute; left:0; top:0;
+  width:8px; height:8px;
+  opacity:0;
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.hud-fx.is-ring{
+  border:1px solid var(--red);
+  border-radius:50%;
+  animation:hudRing .5s cubic-bezier(.2,.7,.3,1) forwards;
+}
+.hud-fx.is-ring-2{
+  border:1px solid rgba(255,22,53,.45);
+  border-radius:50%;
+  animation:hudRing2 .65s cubic-bezier(.2,.7,.3,1) forwards;
+}
+.hud-fx.is-cross{ width:24px; height:24px; }
+.hud-fx.is-cross::before,.hud-fx.is-cross::after{
+  content:""; position:absolute; background:var(--red);
+}
+.hud-fx.is-cross::before{ left:50%; top:0; width:1px; height:100%; transform:translateX(-50%); }
+.hud-fx.is-cross::after{ top:50%; left:0; height:1px; width:100%; transform:translateY(-50%); }
+.hud-fx.is-cross{ animation:hudCross .4s ease-out forwards; }
+.hud-fx.is-particle{
+  width:3px; height:3px; border-radius:50%; background:var(--red);
+  animation:hudParticle .45s ease-out forwards;
+}
+@keyframes hudRing{
+  0%{ opacity:0; transform:translate(-50%,-50%) scale(.35); }
+  22%{ opacity:.9; }
+  100%{ opacity:0; transform:translate(-50%,-50%) scale(9); }
+}
+@keyframes hudRing2{
+  0%{ opacity:0; transform:translate(-50%,-50%) scale(.35); }
+  30%{ opacity:.6; }
+  100%{ opacity:0; transform:translate(-50%,-50%) scale(14); }
+}
+@keyframes hudCross{
+  0%{ opacity:0; transform:translate(-50%,-50%) scale(.3) rotate(0deg); }
+  35%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%,-50%) scale(1.7) rotate(45deg); }
+}
+@keyframes hudParticle{
+  0%{ opacity:1; transform:translate(-50%,-50%) translate3d(0,0,0) scale(1); }
+  100%{ opacity:0; transform:translate(-50%,-50%) translate3d(var(--px),var(--py),0) scale(.3); }
+}
+.hud-target{ position:relative; }
+.hud-target::after{
+  content:"";
+  position:absolute; inset:-6px;
+  border-radius:inherit;
+  border:1px solid transparent;
+  opacity:0;
+  transform:scale(.96);
+  transition:opacity .3s var(--ease), transform .3s var(--ease);
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.hud-target.is-hudhover::after{
+  opacity:1; transform:scale(1);
+  border-color:rgba(255,22,53,.55);
+}
+@media (prefers-reduced-motion: reduce){ .hud-fx{ animation:none !important; display:none; } }
+
+/* Pause offscreen decorative animations to save GPU/CPU */
+.is-paused{ animation-play-state:paused !important; }
+
+/* ============================================================
+   PREMIUM WEB WEAVE — full-viewport ambient spider silk
+   The whole network breathes, glows softly, ripples occasionally,
+   and carries slow light pulses along the strands. Cinematic,
+   minimal, Stark/Spider-tech in feel.
+   GPU-only: transform + opacity (SMIL drives pulse motion).
+============================================================ */
+.web-network{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+  transform:translate3d(0,0,0);
+  will-change:transform;
+}
+.web-network svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.web-weave{
+  transform-box:fill-box;
+  transform-origin:50% 50%;
+  animation:webBreathe 13s ease-in-out infinite;
+}
+@keyframes webBreathe{
+  0%,100%{ transform:scale(1) rotate(0deg); }
+  50%{ transform:scale(1.006) rotate(.12deg); }
+}
+
+.silk-path{
+  fill:none;
+  stroke:rgba(245,243,238,.07);
+  stroke-width:1;
+  vector-effect:non-scaling-stroke;
+}
+.silk-path.is-red{ stroke:rgba(255,22,53,.09); }
+.silk-path.is-faint{ stroke:rgba(245,243,238,.04); }
+
+/* Subtle ripple — a few connected strands brighten together, ~every 8-15s */
+.ripple-group{ opacity:0; animation:webRipple 12s ease-in-out infinite; }
+.ripple-group path{
+  fill:none;
+  stroke:rgba(245,243,238,.5);
+  stroke-width:1.1;
+  vector-effect:non-scaling-stroke;
+  filter:url(#silkGlow);
+}
+.ripple-group.is-red path{ stroke:rgba(255,45,66,.55); }
+.ripple-b{ animation-duration:9s; animation-delay:-4s; }
+.ripple-c{ animation-duration:14.5s; animation-delay:-7.5s; }
+@keyframes webRipple{
+  0%,80%,100%{ opacity:0; }
+  87%{ opacity:.5; }
+  92%{ opacity:.16; }
+  96%{ opacity:0; }
+}
+
+/* Travelling light pulses — energy moving through the silk */
+.pulse-dot{
+  opacity:0;
+  animation-name:pulseFade;
+  animation-duration:var(--pdur,9s);
+  animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;
+  animation-delay:var(--pdelay,0s);
+}
+@keyframes pulseFade{
+  0%,100%{ opacity:0; }
+  8%{ opacity:0; }
+  16%{ opacity:.85; }
+  70%{ opacity:.55; }
+  92%{ opacity:0; }
+}
+
+/* Faint blue/white tech glow, breathing in intensity */
+.tech-glow{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.6;
+  background:
+    radial-gradient(ellipse 60% 45% at 26% 18%, rgba(140,195,255,.07), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 78% 82%, rgba(170,215,255,.05), transparent 65%);
+  animation:techGlowPulse 16s ease-in-out infinite alternate;
+  will-change:opacity;
+}
+@keyframes techGlowPulse{
+  0%{ opacity:.35; }
+  50%{ opacity:.85; }
+  100%{ opacity:.5; }
+}
+
+@media (max-width:600px){
+  .pulse-dot:nth-of-type(n+3){ display:none; }
+  .ripple-group path{ filter:none; }
+}
+@media (prefers-reduced-motion: reduce){
+  .web-weave,.ripple-group,.pulse-dot,.tech-glow{ animation:none !important; }
+  .pulse-dot{ display:none !important; }
+  .ripple-group{ opacity:0 !important; }
+}
+
+/* Pause every decorative loop while the tab/page is not visible */
+.is-doc-hidden .grain,
+.is-doc-hidden .web-corner,
+.is-doc-hidden .web-weave,
+.is-doc-hidden .ripple-group,
+.is-doc-hidden .pulse-dot,
+.is-doc-hidden .tech-glow,
+.is-doc-hidden .profile-photo-wrap,
+.is-doc-hidden .profile-photo-ring,
+.is-doc-hidden .profile-photo-badge{
+  animation-play-state:paused !important;
 }
 </style>
 </head>
@@ -797,6 +1021,109 @@ body::before{
  </div>
  <!-- FIXED BACKDROP -->
 <div class="backdrop"><div class="grain"></div></div>
+
+<!-- SPIDER-MAN WEB CORNERS (decorative, corners only) -->
+<div class="web-corner web-corner-tl" id="webTL" aria-hidden="true">
+  <svg viewBox="0 0 200 200" preserveAspectRatio="none">
+    <line class="strand" x1="0" y1="0" x2="200" y2="26"/>
+    <line class="strand" x1="0" y1="0" x2="168" y2="86"/>
+    <line x1="0" y1="0" x2="120" y2="138"/>
+    <line class="strand" x1="0" y1="0" x2="62" y2="178"/>
+    <line x1="0" y1="0" x2="16" y2="200"/>
+    <path d="M200,26 Q170,50 168,86"/>
+    <path class="strand" d="M168,86 Q140,112 120,138"/>
+    <path d="M120,138 Q90,160 62,178"/>
+    <path class="strand" d="M62,178 Q34,192 16,200"/>
+    <path d="M200,26 Q150,18 120,138" opacity=".55"/>
+  </svg>
+</div>
+<div class="web-corner web-corner-tr" id="webTR" aria-hidden="true">
+  <svg viewBox="0 0 200 200" preserveAspectRatio="none">
+    <line class="strand" x1="0" y1="0" x2="200" y2="26"/>
+    <line class="strand" x1="0" y1="0" x2="168" y2="86"/>
+    <line x1="0" y1="0" x2="120" y2="138"/>
+    <line class="strand" x1="0" y1="0" x2="62" y2="178"/>
+    <line x1="0" y1="0" x2="16" y2="200"/>
+    <path d="M200,26 Q170,50 168,86"/>
+    <path class="strand" d="M168,86 Q140,112 120,138"/>
+    <path d="M120,138 Q90,160 62,178"/>
+    <path class="strand" d="M62,178 Q34,192 16,200"/>
+    <path d="M200,26 Q150,18 120,138" opacity=".55"/>
+  </svg>
+</div>
+
+<!-- FAINT BLUE/WHITE TECH GLOW (breathing intensity) -->
+<div class="tech-glow" aria-hidden="true"></div>
+
+<!-- PREMIUM WEB WEAVE — full-viewport ambient spider silk -->
+<div class="web-network" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+    <defs>
+      <filter id="silkGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.4"/>
+      </filter>
+      <filter id="pulseBlur" x="-150%" y="-150%" width="400%" height="400%">
+        <feGaussianBlur stdDeviation="1.6"/>
+      </filter>
+      <radialGradient id="pulseGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#eaf4ff" stop-opacity="1"/>
+        <stop offset="45%" stop-color="#8fc4ff" stop-opacity=".85"/>
+        <stop offset="100%" stop-color="#8fc4ff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <g class="web-weave">
+      <!-- base silk network: radiating strands converging on two inner nodes,
+           plus edge arcs so the web spans the whole background -->
+      <path id="silkTLC1" class="silk-path" d="M0,0 Q300,180 560,360"/>
+      <path id="silkTRC2" class="silk-path is-red" d="M1440,0 Q1200,260 900,520"/>
+      <path id="silkCore" class="silk-path" d="M560,360 Q730,410 900,520"/>
+      <path id="silkBLC1" class="silk-path" d="M0,900 Q260,640 560,360"/>
+      <path id="silkBRC2" class="silk-path is-red" d="M1440,900 Q1180,700 900,520"/>
+      <path class="silk-path is-faint" d="M0,460 Q280,420 560,360"/>
+      <path class="silk-path is-faint" d="M1440,440 Q1160,480 900,520"/>
+      <path id="silkMTC1" class="silk-path" d="M720,0 Q640,180 560,360"/>
+      <path class="silk-path" d="M760,900 Q830,700 900,520"/>
+      <path class="silk-path is-faint" d="M0,0 Q720,70 1440,0"/>
+      <path class="silk-path is-faint" d="M0,900 Q720,830 1440,900"/>
+      <path class="silk-path is-faint" d="M0,460 Q720,555 1440,440"/>
+
+      <!-- ripple groups: duplicate strands that briefly brighten together,
+           spreading like energy through connected silk -->
+      <g class="ripple-group">
+        <path d="M0,0 Q300,180 560,360"/>
+        <path d="M0,900 Q260,640 560,360"/>
+        <path d="M0,460 Q280,420 560,360"/>
+        <path d="M720,0 Q640,180 560,360"/>
+      </g>
+      <g class="ripple-group ripple-b is-red">
+        <path d="M1440,0 Q1200,260 900,520"/>
+        <path d="M1440,900 Q1180,700 900,520"/>
+        <path d="M1440,440 Q1160,480 900,520"/>
+        <path d="M760,900 Q830,700 900,520"/>
+      </g>
+      <g class="ripple-group ripple-c">
+        <path d="M0,0 Q720,70 1440,0"/>
+        <path d="M0,900 Q720,830 1440,900"/>
+        <path d="M0,460 Q720,555 1440,440"/>
+      </g>
+
+      <!-- travelling light pulses: energy flowing through the spider silk -->
+      <circle class="pulse-dot" r="3.2" fill="url(#pulseGlow)" filter="url(#pulseBlur)" style="--pdur:9s;--pdelay:.5s;">
+        <animateMotion dur="9s" begin="0.5s" repeatCount="indefinite"><mpath href="#silkTLC1"/></animateMotion>
+      </circle>
+      <circle class="pulse-dot" r="2.6" fill="url(#pulseGlow)" filter="url(#pulseBlur)" style="--pdur:11s;--pdelay:2s;">
+        <animateMotion dur="11s" begin="2s" repeatCount="indefinite"><mpath href="#silkCore"/></animateMotion>
+      </circle>
+      <circle class="pulse-dot" r="3" fill="url(#pulseGlow)" filter="url(#pulseBlur)" style="--pdur:13s;--pdelay:4.5s;">
+        <animateMotion dur="13s" begin="4.5s" repeatCount="indefinite"><mpath href="#silkBRC2"/></animateMotion>
+      </circle>
+      <circle class="pulse-dot" r="2.4" fill="url(#pulseGlow)" filter="url(#pulseBlur)" style="--pdur:10s;--pdelay:1.2s;">
+        <animateMotion dur="10s" begin="1.2s" repeatCount="indefinite"><mpath href="#silkMTC1"/></animateMotion>
+      </circle>
+    </g>
+  </svg>
+</div>
 
 <!-- CUSTOM CURSOR -->
 <div class="cursor-dot" id="cursorDot"></div>
@@ -862,7 +1189,7 @@ body::before{
         
 
       <div class="scroll-cue"><span class="line"></span>CLG:RD NATIONAL COLLEGE OF A/S <BR>ADDRESS:SURAMPATTI VALASU,ERODE</div>
-    感情 </section>
+     science</section>
 
     <!-- ABOUT -->
     <section class="section" id="about">
@@ -1112,6 +1439,199 @@ body::before{
     });
   });
 
+})();
+</script>
+
+<!-- SPIDER-WEB SHIVER + IRON MAN HUD FX (performance-tuned) -->
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+  /* ---------- SPIDER-WEB CORNER SHIVER ---------- */
+  if(!reduceMotion){
+    var tl = document.getElementById('webTL');
+    var tr = document.getElementById('webTR');
+    var corners = [
+      { el: tl, x:0, y:0 },
+      { el: tr, x:window.innerWidth, y:0 }
+    ];
+    window.addEventListener('resize', function(){
+      corners[1].x = window.innerWidth;
+    }, { passive:true });
+
+    var threshold = 240;
+    var rafPending = false;
+    var lastX = -999, lastY = -999;
+
+    function triggerShiver(c, wx, wy){
+      c.el.style.setProperty('--wx', wx.toFixed(2) + 'px');
+      c.el.style.setProperty('--wy', wy.toFixed(2) + 'px');
+      if(!c.el.classList.contains('is-near')){
+        c.el.classList.add('is-near');
+        var done = function(){
+          c.el.classList.remove('is-near');
+          c.el.removeEventListener('animationend', done);
+        };
+        c.el.addEventListener('animationend', done);
+      }
+    }
+
+    function updateWeb(x, y){
+      for(var i=0;i<corners.length;i++){
+        var c = corners[i];
+        if(!c.el) continue;
+        var dx = x - c.x, dy = y - c.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < threshold){
+          var strength = 1 - dist / threshold;
+          var wx = (dx / (dist || 1)) * strength * 2.6;
+          var wy = (dy / (dist || 1)) * strength * 2.6;
+          triggerShiver(c, wx, wy);
+        }
+      }
+    }
+
+    function onPointerMove(e){
+      var point = e.touches ? e.touches[0] : e;
+      lastX = point.clientX; lastY = point.clientY;
+      if(!rafPending){
+        rafPending = true;
+        requestAnimationFrame(function(){
+          updateWeb(lastX, lastY);
+          rafPending = false;
+        });
+      }
+    }
+    window.addEventListener('mousemove', onPointerMove, { passive:true });
+    window.addEventListener('touchmove', onPointerMove, { passive:true });
+    window.addEventListener('touchstart', onPointerMove, { passive:true });
+  }
+
+  /* ---------- IRON MAN / HUD INTERACTION FX ---------- */
+  if(!reduceMotion){
+    var hudLayer = document.createElement('div');
+    hudLayer.className = 'hud-fx-layer';
+    document.body.appendChild(hudLayer);
+
+    var hudSelector = '.btn, .nav-link, .profile-photo-wrap, .project-card, .contact-link';
+    var MAX_FX = 24; // cap concurrent nodes so rapid interaction can't bloat the DOM
+
+    function spawnEl(cls, x, y){
+      if(hudLayer.childElementCount > MAX_FX) return null;
+      var el = document.createElement('span');
+      el.className = 'hud-fx ' + cls;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      hudLayer.appendChild(el);
+      el.addEventListener('animationend', function(){ el.remove(); }, { once:true });
+      return el;
+    }
+
+    function spawnHUD(x, y){
+      spawnEl('is-ring', x, y);
+      spawnEl('is-ring-2', x, y);
+      spawnEl('is-cross', x, y);
+      if(!coarsePointer){
+        var count = 5;
+        for(var i=0;i<count;i++){
+          var p = spawnEl('is-particle', x, y);
+          if(!p) break;
+          var angle = Math.random() * Math.PI * 2;
+          var dist = 18 + Math.random() * 24;
+          p.style.setProperty('--px', (Math.cos(angle)*dist).toFixed(1) + 'px');
+          p.style.setProperty('--py', (Math.sin(angle)*dist).toFixed(1) + 'px');
+        }
+      }
+    }
+
+    function triggerHUD(t, x, y){
+      t.classList.add('hud-target', 'is-hudhover');
+      clearTimeout(t._hudTimer);
+      t._hudTimer = setTimeout(function(){ t.classList.remove('is-hudhover'); }, 650);
+      spawnHUD(x, y);
+    }
+
+    /* Trigger ONLY on an actual click/tap — never on hover or mouse movement */
+    if('PointerEvent' in window){
+      document.addEventListener('pointerdown', function(e){
+        if(e.pointerType === 'mouse' && e.button !== 0) return; // left click only
+        var t = e.target.closest(hudSelector);
+        if(!t) return;
+        triggerHUD(t, e.clientX, e.clientY);
+      }, { passive:true });
+    } else {
+      // Fallback for browsers without PointerEvent support
+      var touchFiredAt = 0;
+      document.addEventListener('touchstart', function(e){
+        var t = e.target.closest(hudSelector);
+        if(!t || !e.touches[0]) return;
+        touchFiredAt = Date.now();
+        triggerHUD(t, e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive:true });
+
+      document.addEventListener('click', function(e){
+        if(Date.now() - touchFiredAt < 600) return; // avoid double-fire after a touch
+        var t = e.target.closest(hudSelector);
+        if(!t) return;
+        triggerHUD(t, e.clientX, e.clientY);
+      }, { passive:true });
+    }
+  }
+
+  /* ---------- PAUSE OFFSCREEN DECORATIVE ANIMATIONS ---------- */
+  if('IntersectionObserver' in window){
+    var pausable = document.querySelectorAll('.profile-photo-wrap, .profile-photo-ring, .profile-photo-badge, .web-corner');
+    var pauseIo = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        entry.target.classList.toggle('is-paused', !entry.isIntersecting);
+      });
+    }, { threshold:0 });
+    pausable.forEach(function(el){ pauseIo.observe(el); });
+  }
+
+  /* ---------- AMBIENT WEB PARALLAX (extremely soft) ---------- */
+  if(!reduceMotion){
+    var webNet = document.querySelector('.web-network');
+    var frameEl = document.querySelector('.frame');
+    if(webNet && frameEl){
+      var wp = { sy:0, mx:0, my:0 };
+      var wpPending = false;
+      var applyWebParallax = function(){
+        var ty = Math.min(wp.sy * 0.02, 36) + (wp.my * 5);
+        var tx = wp.mx * 6;
+        webNet.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0)';
+        wpPending = false;
+      };
+      var queueWebParallax = function(){
+        if(!wpPending){ wpPending = true; requestAnimationFrame(applyWebParallax); }
+      };
+      frameEl.addEventListener('scroll', function(){
+        wp.sy = frameEl.scrollTop;
+        queueWebParallax();
+      }, { passive:true });
+      if(!coarsePointer){
+        window.addEventListener('mousemove', function(e){
+          wp.mx = (e.clientX / window.innerWidth) - .5;
+          wp.my = (e.clientY / window.innerHeight) - .5;
+          queueWebParallax();
+        }, { passive:true });
+      }
+    }
+  }
+
+  /* ---------- PAUSE ALL DECORATIVE ANIMATIONS WHEN THE TAB IS HIDDEN ---------- */
+  var webNetSvg = document.querySelector('.web-network svg');
+  function syncVisibility(){
+    var hidden = document.hidden;
+    document.body.classList.toggle('is-doc-hidden', hidden);
+    if(webNetSvg && webNetSvg.pauseAnimations){
+      if(hidden){ webNetSvg.pauseAnimations(); } else { webNetSvg.unpauseAnimations(); }
+    }
+  }
+  document.addEventListener('visibilitychange', syncVisibility, { passive:true });
+  syncVisibility();
 })();
 </script>
 </body>
